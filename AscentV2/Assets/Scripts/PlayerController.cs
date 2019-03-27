@@ -77,7 +77,7 @@ public class PlayerController : MonoBehaviour {
     [HideInInspector] public int fallLandingH;
     [SerializeField] private int maxFallHeight = 50;
 
-    private int fallCounter = 0;
+    [HideInInspector] public int fallCounter = 0;
     private Quaternion targetRotation;
 
     private Vector3 jumpStartPosition;
@@ -106,7 +106,9 @@ public class PlayerController : MonoBehaviour {
 
     public Image fallingIndicator;
     public Color fallingIndicatorAlpha;
-    public float bobValue = 0;
+    private float bobValue = 0;
+
+    [SerializeField] public int maxFallTime;
 
     void Start () 
 	{
@@ -149,21 +151,19 @@ public class PlayerController : MonoBehaviour {
 
             HeadTilt();
 
-            if (Input.GetKey(KeyCode.C) && onGround)
+            if ((Input.GetKey(KeyCode.C) || Input.GetAxisRaw("Fire4")!=0 || Input.GetButton("Fire5")) && onGround)
             {
                 isSliding = true;
-            } else if (!slideFirstFrame && isSliding == true && !Input.GetKey(KeyCode.C))
+            } else if (!slideFirstFrame && isSliding == true && ( !Input.GetKey(KeyCode.C) || Input.GetAxisRaw("Fire4") == 0))
             {
                 isSliding = false;
-               // StopCoroutine(cameraShakeCam.CamShake(0,0));
                 DOTween.To(() => cameraShakeCam.transform.localPosition, x => cameraShakeCam.transform.localPosition = x, cameraShakeCam.resetPos, 0.1f);
-                //cameraShakeCam.transform.localPosition = cameraShakeCam.resetPos;
                 myCapsuleCollider5H.center = new Vector3(0,2.5f,0);
                 myCapsuleCollider5H.height = 5;
                 slideFirstFrame = true;
             }
 
-            if (Input.GetKeyDown(KeyCode.R) || callDeath)
+            if (Input.GetKeyDown(KeyCode.R) || callDeath || Input.GetButtonDown("restart"))
             {
                 Debug.Log("dieded Reset");
                 Death();
@@ -184,47 +184,29 @@ public class PlayerController : MonoBehaviour {
             canMove = true;
 		}
 
-        if (Input.GetKeyDown(KeyCode.A) && !powerIsOnCd && !isSliding)
-        {
-            if (isAlenvers)
-            {
-            isAlenvers = false;
-            Physics.gravity = new Vector3(0, worldGravity, 0);
-            }
-            else
-            {
-            Physics.gravity = new Vector3(0, -worldGravity, 0);                   
-            isAlenvers = true;
-            }
-            powerIsOnCd = true;
-            playerHolder.transform.position = this.transform.position;
-            transform.position = playerHolder.transform.position;
-            playerHolder.transform.eulerAngles = new Vector3(playerHolder.transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, playerHolder.transform.rotation.eulerAngles.z);
-            cam.mouseLook.x = 0;
+        if ((Input.GetKeyDown(KeyCode.A)|| Input.GetMouseButtonDown(0) || Input.GetButton("Fire3") ) && !powerIsOnCd && !isSliding)
+        {   
             InitiateRotation();             
-        }
-
-        
+        }        
         fallingIndicator.color = fallingIndicatorAlpha;
-
     }
 
     void MomentumParse()
     {
-        if ((Input.GetKey(KeyCode.Z) && onGround) && previousPosition != atpPosition && !isSliding)
+        if (((Input.GetKey(KeyCode.Z) || Input.GetAxisRaw("Vertical") > 0 )&& onGround) && previousPosition != atpPosition && !isSliding)
         {
             if (momentum < 50)
             {
                 momentum++;
-                momentumForce = 0.50f + (((float)momentum / 100));
+                momentumForce = 0.75f + (((float)momentum / 200));
             }
         }
-        else if ((Input.GetKey(KeyCode.S) || onGround && !Input.GetKey(KeyCode.Z) || previousPosition == atpPosition) && !isSliding) 
+        else if ((Input.GetKey(KeyCode.S) || Input.GetAxisRaw("Vertical") < -0.5 || onGround && !Input.GetKey(KeyCode.Z) || previousPosition == atpPosition) && !isSliding) 
         {
             if (momentum > 0)
             {
             momentum -= 5;
-            momentumForce = 0.50f + (((float)momentum / 100));
+            momentumForce = 0.75f + (((float)momentum / 200));
                 if (momentum < 0)
                 {
                     momentum = 0;
@@ -232,11 +214,26 @@ public class PlayerController : MonoBehaviour {
             }
         }
         camera.fieldOfView = 90 + (((float)momentum / 2)*0.5f);
-
     }
 
-    private void InitiateRotation ()
+    public void InitiateRotation ()
     {
+        if (isAlenvers)
+        {
+            isAlenvers = false;
+            Physics.gravity = new Vector3(0, worldGravity, 0);
+        }
+        else
+        {
+            Physics.gravity = new Vector3(0, -worldGravity, 0);
+            isAlenvers = true;
+        }
+        powerIsOnCd = true;
+        playerHolder.transform.position = this.transform.position;
+        transform.position = playerHolder.transform.position;
+        playerHolder.transform.eulerAngles = new Vector3(playerHolder.transform.rotation.eulerAngles.x, transform.rotation.eulerAngles.y, playerHolder.transform.rotation.eulerAngles.z);
+        cam.mouseLook.x = 0;
+
         fallCounter = 0;
         aRotation = 0;
         bRotation = 180;
@@ -261,13 +258,6 @@ public class PlayerController : MonoBehaviour {
         {
             staticRotation = false;
         }
-      /*  if (atpPosition == previousPosition && !isAlenvers)
-        {
-            DOTween.To(() => playerHolder.transform.localPosition, x => playerHolder.transform.localPosition = x, new Vector3(playerHolder.transform.localPosition.x, playerHolder.transform.localPosition.y - 4, playerHolder.transform.localPosition.z), 0.9f);
-        } else if (atpPosition == previousPosition && isAlenvers)
-        {
-            DOTween.To(() => playerHolder.transform.localPosition, x => playerHolder.transform.localPosition = x, new Vector3(playerHolder.transform.localPosition.x, playerHolder.transform.localPosition.y + 4, playerHolder.transform.localPosition.z), 0.9f);
-        }*/
         rotatePlayer = true;     
     }
     
@@ -276,13 +266,12 @@ public class PlayerController : MonoBehaviour {
         if (powerIsOnCd || fallingCheck ) {
         fallCounter = fallCounter + 1;
 
-            if (fallCounter > 130)
+            if (fallCounter > maxFallTime -50)
             {
-                //Debug.Log(1f - ((180f - fallCounter) * 2f / 100f));
                 fallingIndicatorAlpha.a = 1f - ((180f - fallCounter)*2f/100f);
             }
 
-            if (fallCounter >= 180)
+            if (fallCounter >= maxFallTime )
             {
                 fallCounter = 0;
                 Debug.Log("dieded longFall");
@@ -378,7 +367,6 @@ public class PlayerController : MonoBehaviour {
 
         if (!slideFirstFrame)
         {
-           // StopCoroutine(cameraShakeCam.CamShake(0, 0));
             cameraShakeCam.transform.localPosition = cameraShakeCam.resetPos;
             if (isAlenvers)
                 {
@@ -443,6 +431,7 @@ public class PlayerController : MonoBehaviour {
 		{
 			wasOnGround = false;
             fallLandingH = (int)transform.position.y;
+
             if ((fallStartingH - fallLandingH) >= 1.5 * maxFallHeight)
             {
                 dieOnLanding = true;
@@ -486,7 +475,14 @@ public class PlayerController : MonoBehaviour {
 			source.PlayOneShot (landSound, 0.8f);
             fallLandingH = (int)transform.position.y;
             powerIsOnCd = false;
-            if ((fallStartingH - fallLandingH) >= maxFallHeight || dieOnLanding)
+
+            if ((fallStartingH - fallLandingH) >= maxFallHeight && !isAlenvers || dieOnLanding)
+            {
+                dieOnLanding = false;
+                Debug.Log("dieded fallDamage");
+                Death();
+            }
+            else if (-(fallStartingH - fallLandingH) >= maxFallHeight && isAlenvers)
             {
                 dieOnLanding = false;
                 Debug.Log("dieded fallDamage");
@@ -494,7 +490,6 @@ public class PlayerController : MonoBehaviour {
             }
             else if (!Input.GetKey(KeyCode.C))
             {
-                // StartCoroutine(cameraShakeCam.CamShake(.07f, .15f));  
                 cameraShakeCam.camShaker();
             }
 		}
@@ -527,19 +522,16 @@ public class PlayerController : MonoBehaviour {
                     rbPlayer.AddForce(force, ForceMode.VelocityChange);
                     slideFirstFrame = false;
 
-                    //StopCoroutine(cameraShakeCam.CamShake(0, 0));
                     cameraShakeCam.transform.localPosition = cameraShakeCam.resetPos;
                     if (isAlenvers)
                     {
                         slideTweenHeight = cameraBase.transform.position.y;
-                        DOTween.To(() => slideTweenHeight, x => slideTweenHeight = x, slideTweenHeight + 1.5f, 0.1f);
-                        //cameraBase.transform.position = new Vector3(cameraBase.transform.position.x, cameraBase.transform.position.y + 1.5f, cameraBase.transform.position.z);
+                        DOTween.To(() => slideTweenHeight, x => slideTweenHeight = x, slideTweenHeight + 1.2f, 0.1f);
                     }
                     else
                     {
                         slideTweenHeight = cameraBase.transform.position.y;
-                        DOTween.To(() => slideTweenHeight, x => slideTweenHeight = x, slideTweenHeight - 1.5f, 0.1f);
-                        //cameraBase.transform.position = new Vector3(cameraBase.transform.position.x, cameraBase.transform.position.y - 1.5f, cameraBase.transform.position.z);                                                                     
+                        DOTween.To(() => slideTweenHeight, x => slideTweenHeight = x, slideTweenHeight - 1.2f, 0.1f);
                     }
                     myCapsuleCollider5H.center = new Vector3(0, 1f, 0);
                     myCapsuleCollider5H.height = 2;
