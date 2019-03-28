@@ -1,16 +1,28 @@
 fileFormatVersion: 2
-guid: 1cc761b1ea464e74aa6190530e0b2b5e
+guid: 044bd82d50ecc454db16115325aee1e0
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Mesh
-    100002: //RootNode
-    400000: Mesh
-    400002: //RootNode
-    2100000: MeshMat
-    2300000: Mesh
-    3300000: Mesh
-    4300000: Mesh
+    100000: Pyramid
+    100002: Pyramid.1
+    100004: Pyramid.2
+    100006: //RootNode
+    400000: Pyramid
+    400002: Pyramid.1
+    400004: Pyramid.2
+    400006: //RootNode
+    2100000: PyramidMat
+    2100002: Pyramid.1Mat
+    2100004: Pyramid.2Mat
+    2300000: Pyramid
+    2300002: Pyramid.1
+    2300004: Pyramid.2
+    3300000: Pyramid
+    3300002: Pyramid.1
+    3300004: Pyramid.2
+    4300000: Pyramid
+    4300002: Pyramid.1
+    4300004: Pyramid.2
   externalObjects: {}
   materials:
     importMaterials: 1

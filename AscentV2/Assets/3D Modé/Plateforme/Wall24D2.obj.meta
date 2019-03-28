@@ -1,21 +1,21 @@
 fileFormatVersion: 2
-guid: 22509f06b8b64ae4295b17dd9515fb31
+guid: 9f04dc9840c1adb4ba3c6591b1b2c7d3
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Mesh
+    100000: Wall24_Mesh
     100002: //RootNode
-    400000: Mesh
+    400000: Wall24_Mesh
     400002: //RootNode
-    2100000: MeshMat
-    2300000: Mesh
-    3300000: Mesh
-    4300000: Mesh
+    2100000: Wall24_MeshMat
+    2300000: Wall24_Mesh
+    3300000: Wall24_Mesh
+    4300000: Wall24_Mesh
   externalObjects:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
-      name: MeshMat
+      name: Wall24_MeshMat
     second: {fileID: 2100000, guid: eb7c6c143b83b417195cebaa9ed31348, type: 2}
   materials:
     importMaterials: 1
