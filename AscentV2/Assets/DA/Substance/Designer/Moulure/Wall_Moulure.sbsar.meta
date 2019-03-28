@@ -55,9 +55,11 @@ ScriptedImporter:
     graphDescIndex: 1
     generateAllOutputs: 1
     generateMipMaps: 1
-    preset: " <sbspreset pkgurl=\"pkg://Wall_Moulure\" label=\"\" >\n </sbspreset>\n"
+    preset: " <sbspreset pkgurl=\"pkg://Wall_Moulure\" label=\"\" >\n  <presetinput
+      identifier=\"$outputsize\" uid=\"4165041534\" type=\"8\" value=\"11,11\" />\n
+      </sbspreset>\n"
     shaderName: Standard
-    outputNames: baseColor,normal,metallic,height,ambientOcclusion
+    outputNames: 
     texturePackingList:
     - outputName: baseColor
       alphaSource: baseColor
@@ -121,8 +123,8 @@ ScriptedImporter:
     targetSettingList:
     - label: 
       bLockRatio: 1
-      textureWidth: 256
-      textureHeight: 256
+      textureWidth: 2048
+      textureHeight: 2048
       textureFormat: 0
       bGenerateOnLoad: 1
     material: {fileID: 2100000, guid: 09fb0997f073df5439afe4722396b38b, type: 3}

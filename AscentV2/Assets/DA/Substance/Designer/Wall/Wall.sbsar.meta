@@ -21,9 +21,11 @@ ScriptedImporter:
     graphDescIndex: 0
     generateAllOutputs: 1
     generateMipMaps: 1
-    preset: " <sbspreset pkgurl=\"pkg://Test_Erode_Wall\" label=\"\" >\n </sbspreset>\n"
+    preset: " <sbspreset pkgurl=\"pkg://Test_Erode_Wall\" label=\"\" >\n  <presetinput
+      identifier=\"$outputsize\" uid=\"418121493\" type=\"8\" value=\"11,11\" />\n
+      </sbspreset>\n"
     shaderName: Standard
-    outputNames: normal,metallic,baseColor
+    outputNames: 
     texturePackingList:
     - outputName: normal
       alphaSource: normal
@@ -63,8 +65,8 @@ ScriptedImporter:
     targetSettingList:
     - label: 
       bLockRatio: 1
-      textureWidth: 256
-      textureHeight: 256
+      textureWidth: 2048
+      textureHeight: 2048
       textureFormat: 0
       bGenerateOnLoad: 1
     material: {fileID: 2100000, guid: 765b7bb9d4ff7ae4b89dee1b4f27db87, type: 3}
